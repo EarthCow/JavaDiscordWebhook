@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * Class used to execute Discord Webhooks with low effort
@@ -20,6 +21,8 @@ import java.util.Set;
  * @author k3kdude & modified by EarthCow
  */
 public class DiscordWebhook {
+
+    public static final Pattern WEBHOOK_PATTERN = Pattern.compile("(?:https?://)?(?:\\w+\\.)?discord(?:app)?\\.com/api(?:/v\\d+)?/webhooks/(\\d+)/([\\w-]+)(?:/(?:\\w+)?)?");
 
     private final String url;
     private String content;
