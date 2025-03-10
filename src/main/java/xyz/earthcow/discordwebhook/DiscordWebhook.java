@@ -60,9 +60,34 @@ public class DiscordWebhook {
         this.embeds.add(embed);
     }
 
+    public void clearEmbeds() {
+        this.embeds.clear();
+    }
+
     public void execute() throws IOException {
         if (this.content == null && this.embeds.isEmpty()) {
             throw new IllegalArgumentException("Set content or add at least one EmbedObject");
+        }
+
+        URL url = new URL(this.url);
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        connection.addRequestProperty("Content-Type", "application/json");
+        connection.addRequestProperty("User-Agent", "Java-DiscordWebhook-BY-Gelox_");
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+
+        OutputStream stream = connection.getOutputStream();
+        stream.write(getJsonString().getBytes(StandardCharsets.UTF_8));
+        stream.flush();
+        stream.close();
+
+        connection.getInputStream().close();
+        connection.disconnect();
+    }
+    
+    public String getJsonString() {
+        if (this.content == null && this.embeds.isEmpty()) {
+            return "{}";
         }
 
         JSONObject json = new JSONObject();
@@ -147,20 +172,7 @@ public class DiscordWebhook {
             json.put("embeds", embedObjects.toArray());
         }
 
-        URL url = new URL(this.url);
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        connection.addRequestProperty("Content-Type", "application/json");
-        connection.addRequestProperty("User-Agent", "Java-DiscordWebhook-BY-Gelox_");
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-
-        OutputStream stream = connection.getOutputStream();
-        stream.write(json.toString().getBytes(StandardCharsets.UTF_8));
-        stream.flush();
-        stream.close();
-
-        connection.getInputStream().close();
-        connection.disconnect();
+        return json.toString();
     }
 
     public static class EmbedObject {
