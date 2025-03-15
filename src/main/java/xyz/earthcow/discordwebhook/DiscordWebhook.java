@@ -65,19 +65,24 @@ public class DiscordWebhook {
     }
 
     public void execute() throws IOException {
-        if (this.content == null && this.embeds.isEmpty()) {
+        execute(null);
+    }
+
+    public void execute(String json) throws IOException {
+        if ((json == null && this.content == null && this.embeds.isEmpty()) || (json != null && (json.isEmpty() || json.equals("{}")))) {
             throw new IllegalArgumentException("Set content or add at least one EmbedObject");
         }
 
         URL url = new URL(this.url);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.addRequestProperty("Content-Type", "application/json");
-        connection.addRequestProperty("User-Agent", "Java-DiscordWebhook-BY-Gelox_");
+        connection.addRequestProperty("User-Agent", "EarthCow/JavaDiscordWebhook");
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
 
         OutputStream stream = connection.getOutputStream();
-        stream.write(getJsonString().getBytes(StandardCharsets.UTF_8));
+        String jsonString = json == null ? getJsonString() : json;
+        stream.write(jsonString.getBytes(StandardCharsets.UTF_8));
         stream.flush();
         stream.close();
 
