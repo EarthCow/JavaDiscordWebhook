@@ -64,6 +64,28 @@ public class DiscordWebhook {
         this.embeds.clear();
     }
 
+    public String getUrl() {
+        return url;
+    }
+    public String getContent() {
+        return content;
+    }
+    public String getUsername() {
+        return username;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public boolean isTts() {
+        return tts;
+    }
+
+    public List<EmbedObject> getEmbeds() {
+        return this.embeds;
+    }
+
     public void execute() throws IOException {
         execute(null);
     }
