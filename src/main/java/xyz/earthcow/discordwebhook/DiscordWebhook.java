@@ -24,7 +24,7 @@ public class DiscordWebhook {
 
     public static final Pattern WEBHOOK_PATTERN = Pattern.compile("(?:https?://)?(?:\\w+\\.)?discord(?:app)?\\.com/api(?:/v\\d+)?/webhooks/(\\d+)/([\\w-]+)(?:/(?:\\w+)?)?");
 
-    private final String url;
+    private String url;
     private String content;
     private String username;
     private String avatarUrl;
@@ -33,10 +33,19 @@ public class DiscordWebhook {
 
     /**
      * Constructs a new DiscordWebhook instance
+     */
+    public DiscordWebhook() {}
+
+    /**
+     * Constructs a new DiscordWebhook instance
      *
      * @param url The webhook URL obtained in Discord
      */
     public DiscordWebhook(String url) {
+        this.url = url;
+    }
+
+    public void setUrl(String url) {
         this.url = url;
     }
 
@@ -87,6 +96,9 @@ public class DiscordWebhook {
     }
 
     public void execute() throws IOException {
+        if (this.url == null) {
+            throw new IllegalArgumentException("Missing url");
+        }
         if (this.content == null && this.embeds.isEmpty()) {
             throw new IllegalArgumentException("Set content or add at least one EmbedObject");
         }
@@ -94,6 +106,9 @@ public class DiscordWebhook {
     }
 
     public void execute(String json) throws IOException {
+        if (this.url == null) {
+            throw new IllegalArgumentException("Missing url");
+        }
         String finalJson;
         if (json != null && !json.isEmpty() && !json.equals("{}")) {
             finalJson = json;
