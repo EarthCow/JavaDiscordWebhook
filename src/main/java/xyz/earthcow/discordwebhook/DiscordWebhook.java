@@ -87,15 +87,30 @@ public class DiscordWebhook {
     }
 
     public void execute() throws IOException {
-        execute(null);
+        if (this.content == null && this.embeds.isEmpty()) {
+            throw new IllegalArgumentException("Set content or add at least one EmbedObject");
+        }
+        execute(this.getJsonString());
     }
 
     public void execute(String json) throws IOException {
-        if ((json == null && this.content == null && this.embeds.isEmpty()) || (json != null && (json.isEmpty() || json.equals("{}")))) {
-            throw new IllegalArgumentException("Set content or add at least one EmbedObject");
+        String finalJson;
+        if (json != null && !json.isEmpty() && !json.equals("{}")) {
+            finalJson = json;
+        } else if (this.content != null || !this.embeds.isEmpty()) {
+            finalJson = this.getJsonString();
+        } else {
+            throw new IllegalArgumentException("Provide valid json, set content, or add at least one EmbedObject");
+        }
+        execute(this.url, finalJson);
+    }
+
+    public static void execute(String webhookUrl, String json) throws IOException {
+        if (webhookUrl == null || webhookUrl.isEmpty() || json == null || json.isEmpty() || json.equals("{}")) {
+            throw new IllegalArgumentException("Invalid webhook url or json");
         }
 
-        URL url = new URL(this.url);
+        URL url = new URL(webhookUrl);
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.addRequestProperty("Content-Type", "application/json");
         connection.addRequestProperty("User-Agent", "EarthCow/JavaDiscordWebhook");
@@ -103,8 +118,7 @@ public class DiscordWebhook {
         connection.setRequestMethod("POST");
 
         OutputStream stream = connection.getOutputStream();
-        String jsonString = json == null ? getJsonString() : json;
-        stream.write(jsonString.getBytes(StandardCharsets.UTF_8));
+        stream.write(json.getBytes(StandardCharsets.UTF_8));
         stream.flush();
         stream.close();
 
