@@ -149,7 +149,9 @@ public class DiscordWebhook {
                 jsonEmbed.put("url", embed.getUrl());
                 jsonEmbed.put("timestamp", embed.getTimestamp());
 
-                if (embed.getColor() != null) {
+                if (embed.getColorStr() != null) {
+                    jsonEmbed.put("color", embed.getColorStr());
+                } else if (embed.getColor() != null) {
                     Color color = embed.getColor();
                     int rgb = color.getRed();
                     rgb = (rgb << 8) + color.getGreen();
@@ -221,6 +223,7 @@ public class DiscordWebhook {
         private String description;
         private String url;
         private Color color;
+        private String colorStr;
 
         private Footer footer;
         private String timestamp;
@@ -243,6 +246,10 @@ public class DiscordWebhook {
 
         public Color getColor() {
             return color;
+        }
+
+        public String getColorStr() {
+            return colorStr;
         }
 
         public Footer getFooter() {
@@ -286,6 +293,18 @@ public class DiscordWebhook {
 
         public EmbedObject setColor(Color color) {
             this.color = color;
+            return this;
+        }
+
+        /**
+         * Overrides the embed's Color field with a string representing a decimal color. Unless set to null, this color
+         * string will be used in the construction of the json payload. Useful when the json payload is more desirable
+         * than the DiscordWebhook object.
+         * @param colorStr Decimal color as a string
+         * @return Itself (for chaining)
+         */
+        public EmbedObject setColorStr(String colorStr) {
+            this.colorStr = colorStr;
             return this;
         }
 
